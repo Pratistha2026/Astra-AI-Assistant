@@ -1,55 +1,101 @@
 # Astra AI Assistant
 
-A desktop voice/text assistant built with Python and CustomTkinter. Type or speak a command and Astra will open apps, search the web, answer questions using Gemini, and talk back.
+Astra is a desktop AI assistant that I built using Python. It accepts both voice and text commands and can perform everyday tasks such as opening applications, searching the web, answering questions with Google Gemini, and responding through speech.
+
+The goal of this project was to combine speech recognition, desktop automation, and generative AI into a single application with a simple user interface.
+
+---
 
 ## Features
 
-- Text or voice input (mic button)
-- Opens installed apps and common websites by name
-- Google search by voice/text
-- Tells the current time
-- Answers general questions using Google Gemini, with simple kid-friendly explanations
-- Speaks replies out loud (pyttsx3, works offline)
-- Reply mode switch in the sidebar: Text + Voice, or Text only
-- Say/type "stop" (or tap the Stop button) to cut off speech and cancel whatever's running, instantly
-- Say/type "exit" or "quit" to close the app
+- Voice and text input
+- AI responses using Google Gemini
+- Opens installed desktop applications
+- Opens websites like YouTube and Google
+- Google search
+- Speaks responses using text-to-speech
+- Displays the current time
+- Stop command to interrupt speech
+- Option to switch between voice responses and text-only responses
+- Exit command to close the application
 
-## Setup
+---
 
-1. Install Python 3.10+.
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Get a Gemini API key from https://aistudio.google.com/app/apikey and put it in `.env`:
-   ```
-   GEMINI_API_KEY=your_key_here
-   ```
-4. Run it:
-   ```
-   python app.py
-   ```
+## Technologies Used
 
-Voice input needs a working microphone and `PyAudio`. On Windows, if `pip install pyaudio` fails, grab a prebuilt wheel matching your Python version instead.
+- Python
+- CustomTkinter
+- Google Gemini API
+- SpeechRecognition
+- PyAudio
+- pyttsx3
+- python-dotenv
 
-## Project structure
+---
 
-```
-app.py                  entry point
-gui/main_window.py      the whole UI (CustomTkinter)
-voice/speaker.py        text-to-speech (pyttsx3)
-voice/listener.py       microphone input (SpeechRecognition)
-brain/ai_brain.py       Gemini API calls + Astra's answer style
-automation/app_opener.py    opens installed apps by name
-automation/web_opener.py    opens websites by name
-automation/search_engine.py Google search
+## Installation
+
+Clone the repository.
+
+```bash
+git clone https://github.com/Pratistha2026/Astra-AI-Assistant.git
 ```
 
-## Adding apps or websites
+Install the required packages.
 
-`automation/app_opener.py` and `automation/web_opener.py` just contain name -> command/URL dictionaries. Add an entry there if you want Astra to recognize a new app or site.
+```bash
+pip install -r requirements.txt
+```
+
+Create a `.env` file in the project folder.
+
+```env
+GEMINI_API_KEY=YOUR_API_KEY
+```
+
+Run the application.
+
+```bash
+python app.py
+```
+
+---
+
+## Project Structure
+
+```
+automation/      Handles application launching, website opening and Google search
+brain/           AI response generation and command processing
+gui/             CustomTkinter interface
+voice/           Speech recognition and text-to-speech
+Storage/         Stores project data
+app.py           Main entry point
+```
+
+---
+
+## Example Commands
+
+- Open YouTube
+- Open Chrome
+- Search Python tutorials
+- What time is it?
+- Explain machine learning
+- Stop
+- Exit
+
+---
 
 ## Notes
 
-- Voice replies are split sentence by sentence so "stop" interrupts almost immediately instead of waiting for the whole reply to finish.
-- Don't commit your `.env` file / API key to a public repo.
+- A valid Google Gemini API key is required.
+- Voice input requires a working microphone.
+- Do not upload your `.env` file or API key.
+
+---
+
+## Author
+
+Pratistha Singh
+
+GitHub: https://github.com/Pratistha2026
