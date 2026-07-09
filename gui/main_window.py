@@ -223,7 +223,7 @@ class AstraGUI(ctk.CTk):
             tips,
             text="Try saying:\n🌐 \"open youtube\"\n🔎 \"search cute cats\"\n"
                  "⏰ \"what's the time\"\n"
-                 "🛑 \"stop\" or the Stop button (stops me instantly)",
+                 "⛔ \"stop\" or the Stop button (stops me instantly)",
             text_color=self.TEXT, font=self.FONT_SMALL, justify="left"
         ).pack(padx=12, pady=12)
 
@@ -245,9 +245,6 @@ class AstraGUI(ctk.CTk):
         ctk.CTkLabel(win, text="Your cute personal AI assistant",
                      text_color=self.TEXT_MUTED, font=self.FONT_SUBTITLE).pack(pady=(0, 16))
 
-        body = ctk.CTkScrollableFrame(win, fg_color=self.PANEL_BG, corner_radius=18)
-        body.pack(fill="both", expand=True, padx=20, pady=(0, 20))
-
         about_text = (
             "Astra is a friendly, voice-and-text desktop assistant built with "
             "Python, CustomTkinter, and Google's Gemini AI.\n\n"
@@ -265,19 +262,22 @@ class AstraGUI(ctk.CTk):
             "🔊 Reply mode:\n"
             "Use the \"Text + Voice\" / \"Text only\" switch in the sidebar to "
             "mute Astra's voice any time and just read her replies instead.\n\n"
-            "🛑 Stopping Astra:\n"
-            "Say or type \"stop\" (or \"exit\"), or tap the red 🛑 Stop button next "
+            "⛔ Stopping Astra:\n"
+            "Say or type \"stop\" (or \"exit\"), or tap the red Stop button next "
             "to the input box, any time to make Astra stop talking immediately.\n\n"
-            "🛠️ Built with:\n"
+            "🔧 Built with:\n"
             "Python • CustomTkinter • pyttsx3 (offline text-to-speech) • "
             "SpeechRecognition (voice input) • Google Gemini (AI brain)\n\n"
             "Made with 💗 for a cute and simple everyday assistant experience."
         )
 
-        ctk.CTkLabel(
-            body, text=about_text, text_color=self.TEXT, font=self.FONT_CHAT,
-            justify="left", wraplength=380
-        ).pack(padx=16, pady=16, anchor="w")
+        body = ctk.CTkTextbox(
+            win, fg_color=self.PANEL_BG, text_color=self.TEXT, font=self.FONT_CHAT,
+            corner_radius=18, wrap="word", activate_scrollbars=True
+        )
+        body.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+        body.insert("1.0", about_text)
+        body.configure(state="disabled")
 
         ctk.CTkButton(
             win, text="Close", corner_radius=16, height=38, font=self.FONT_BUTTON,
@@ -383,7 +383,7 @@ class AstraGUI(ctk.CTk):
             ("🌐 YouTube", "open youtube"),
             ("🔎 Search", "search cute animals"),
             ("⏰ Time", "what's the time"),
-            ("🛑 Stop", "stop"),
+            ("⛔ Stop", "stop"),
         ]
         for label, cmd in actions:
             ctk.CTkButton(
@@ -461,7 +461,7 @@ class AstraGUI(ctk.CTk):
         ).grid(row=0, column=2, padx=(8, 0))
 
         ctk.CTkButton(
-            self.input_frame, text="🛑 Stop", width=100, height=52, corner_radius=22,
+            self.input_frame, text="⛔ Stop", width=100, height=52, corner_radius=22,
             font=self.FONT_BUTTON, fg_color="#FF4D6D", hover_color="#D9354F",
             text_color="#FFFFFF", command=self.stop_everything
         ).grid(row=0, column=3, padx=(8, 0))
@@ -578,7 +578,7 @@ class AstraGUI(ctk.CTk):
 
         if command in stop_phrases or first_word in ("stop", "cancel", "halt"):
             self.stop_everything()
-            self.add_message("Astra", "Okay, stopped! 🛑")
+            self.add_message("Astra", "Okay, stopped! ⛔")
             return
 
         if command in exit_phrases or first_word in ("exit", "quit"):
