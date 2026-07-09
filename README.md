@@ -1,22 +1,22 @@
 # Astra AI Assistant
 
-Astra is a desktop AI assistant that I built using Python. It accepts both voice and text commands and can perform everyday tasks such as opening applications, searching the web, answering questions with Google Gemini, and responding through speech.
+Astra is a desktop AI assistant built with Python that accepts both voice and text commands. It can open applications, search the web, answer questions using Google Gemini, and respond using text-to-speech through a simple desktop interface.
 
-The goal of this project was to combine speech recognition, desktop automation, and generative AI into a single application with a simple user interface.
+I built this project to explore how speech recognition, desktop automation, and generative AI can work together in a single application.
 
 ---
 
 ## Features
 
 - Voice and text input
-- AI responses using Google Gemini
-- Opens installed desktop applications
-- Opens websites like YouTube and Google
-- Google search
-- Speaks responses using text-to-speech
-- Displays the current time
-- Stop command to interrupt speech
-- Option to switch between voice responses and text-only responses
+- AI-powered responses using Google Gemini
+- Open installed desktop applications
+- Open websites such as YouTube and Google
+- Search Google directly from Astra
+- Current time information
+- Offline text-to-speech using pyttsx3
+- Stop command to interrupt speech immediately
+- Switch between **Text + Voice** and **Text Only** reply modes
 - Exit command to close the application
 
 ---
@@ -41,13 +41,19 @@ Clone the repository.
 git clone https://github.com/Pratistha2026/Astra-AI-Assistant.git
 ```
 
+Move into the project folder.
+
+```bash
+cd Astra-AI-Assistant
+```
+
 Install the required packages.
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the project folder.
+Create a `.env` file in the project directory.
 
 ```env
 GEMINI_API_KEY=YOUR_API_KEY
@@ -63,13 +69,28 @@ python app.py
 
 ## Project Structure
 
-```
-automation/      Handles application launching, website opening and Google search
-brain/           AI response generation and command processing
-gui/             CustomTkinter interface
-voice/           Speech recognition and text-to-speech
-Storage/         Stores project data
-app.py           Main entry point
+```text
+automation/
+    app_opener.py
+    search_engine.py
+    web_opener.py
+
+brain/
+    ai_brain.py
+    command.py
+
+gui/
+    main_window.py
+
+voice/
+    listener.py
+    speaker.py
+
+Storage/
+
+app.py
+requirements.txt
+README.md
 ```
 
 ---
@@ -77,7 +98,7 @@ app.py           Main entry point
 ## Example Commands
 
 - Open YouTube
-- Open Chrome
+- Open Google
 - Search Python tutorials
 - What time is it?
 - Explain machine learning
@@ -90,12 +111,13 @@ app.py           Main entry point
 
 - A valid Google Gemini API key is required.
 - Voice input requires a working microphone.
-- Do not upload your `.env` file or API key.
+- Never upload your `.env` file or API key.
+- If PyAudio installation fails on Windows, install a compatible prebuilt wheel for your Python version.
 
 ---
 
 ## Author
 
-Pratistha Singh
+**Pratistha Singh**
 
 GitHub: https://github.com/Pratistha2026
