@@ -6,7 +6,7 @@ recognizer.dynamic_energy_threshold = True
 recognizer.pause_threshold = 1.0
 recognizer.non_speaking_duration = 0.5
 
-MIC_INDEX = None
+MIC_INDEX = 22
 
 
 def list_microphones():
