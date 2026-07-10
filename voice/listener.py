@@ -79,29 +79,18 @@ def test_microphone(index, duration=3):
         return False
 
 
-def _listen_interruptible(source, timeout, phrase_time_limit, stop_event):
-    if stop_event is None:
-        return recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
+def _listen_once(mic_index, timeout, phrase_time_limit, result):
+    try:
+        with sr.Microphone(device_index=mic_index) as source:
+            recognizer.adjust_for_ambient_noise(source, duration=1.2)
+            print("Listening...")
+            audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
 
-    result = {"audio": None, "error": None}
-
-    def _worker():
-        try:
-            result["audio"] = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
-        except Exception as e:
-            result["error"] = e
-
-    worker = threading.Thread(target=_worker, daemon=True)
-    worker.start()
-
-    while worker.is_alive():
-        if stop_event.is_set():
-            return None
-        worker.join(timeout=0.1)
-
-    if result["error"] is not None:
-        raise result["error"]
-    return result["audio"]
+        print("Recognizing...")
+        text = recognizer.recognize_google(audio)
+        result["text"] = text.lower().strip()
+    except Exception as e:
+        result["error"] = e
 
 
 def listen(timeout=8, phrase_time_limit=10, retries=1, stop_event=None):
@@ -110,38 +99,46 @@ def listen(timeout=8, phrase_time_limit=10, retries=1, stop_event=None):
     for attempt in range(retries + 1):
         if stop_event is not None and stop_event.is_set():
             return None
-        try:
-            with sr.Microphone(device_index=mic_index) as source:
-                recognizer.adjust_for_ambient_noise(source, duration=1.2)
-                if stop_event is not None and stop_event.is_set():
-                    return None
-                print("Listening...")
-                audio = _listen_interruptible(source, timeout, phrase_time_limit, stop_event)
 
-            if audio is None:
+        result = {"text": None, "error": None}
+        worker = threading.Thread(target=_listen_once, args=(mic_index, timeout, phrase_time_limit, result), daemon=True)
+        worker.start()
+
+        while worker.is_alive():
+            if stop_event is not None and stop_event.is_set():
+                # We stop waiting so the UI is freed right away. The worker
+                # thread still owns the mic stream and will close it itself
+                # once its listen()/recognize() call finishes on its own.
                 return None
+            worker.join(timeout=0.1)
 
-            print("Recognizing...")
-            text = recognizer.recognize_google(audio)
-            text = text.lower().strip()
-            print("You said:", text)
-            return text
+        err = result["error"]
 
-        except sr.WaitTimeoutError:
+        if err is None:
+            print("You said:", result["text"])
+            return result["text"]
+
+        if isinstance(err, sr.WaitTimeoutError):
             print("Listening timed out - no speech detected.")
-            if attempt < retries and not (stop_event is not None and stop_event.is_set()):
+            if attempt < retries:
                 continue
             return None
-        except sr.UnknownValueError:
+
+        if isinstance(err, sr.UnknownValueError):
             print("Could not understand the audio.")
             return None
-        except sr.RequestError as e:
-            print(f"Speech service error: {e}")
+
+        if isinstance(err, sr.RequestError):
+            print(f"Speech service error: {err}")
             return None
-        except OSError as e:
-            print(f"Microphone error: {e}")
+
+        if isinstance(err, OSError):
+            print(f"Microphone error: {err}")
             find_working_mic_index(force_refresh=True)
             return None
+
+        print(f"Voice error: {err}")
+        return None
 
     return None
 
