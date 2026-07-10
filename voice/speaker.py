@@ -32,9 +32,6 @@ def _pick_voice(engine):
 
 
 def _speak_sentence(engine, sentence):
-    """Speak one sentence using a manually-driven loop instead of
-    runAndWait(), so _stop_flag can interrupt it immediately instead of
-    waiting for the whole sentence to finish."""
     engine.say(sentence)
     engine.startLoop(False)
     try:
