@@ -1,75 +1,63 @@
 # Astra AI Assistant
 
-Astra is a desktop AI assistant built with Python that accepts both voice and text commands. It can open applications, search the web, answer questions using Google Gemini, and respond using text-to-speech through a simple desktop interface.
+A desktop AI assistant for Windows that accepts voice and text commands, answers questions using Google Gemini, and automates common desktop tasks like opening apps and searching the web.
 
-I built this project to explore how speech recognition, desktop automation, and generative AI can work together in a single application.
+Built to explore how speech recognition, desktop automation, and generative AI fit together in a single application.
 
----
+![Astra main window](assets/main%20window.png)
 
 ## Features
 
-- Voice and text input
-- AI-powered responses using Google Gemini
-- Open installed desktop applications
-- Open websites such as YouTube and Google
-- Search Google directly from Astra
-- Current time information
-- Offline text-to-speech using pyttsx3
-- Stop command to interrupt speech immediately
-- Switch between **Text + Voice** and **Text Only** reply modes
-- Exit command to close the application
+- Voice and text input, with a toggle between Text + Voice and Text Only reply modes
+- AI-powered answers via Google Gemini
+- Opens installed desktop applications (Windows only)
+- Opens websites such as YouTube, Gmail, and Google Maps
+- Runs Google searches directly from Astra
+- Reports the current time
+- Offline text-to-speech (pyttsx3), interruptible with a stop command
+- Exit command to close the app
 
----
-
-## Technologies Used
+## Tech Stack
 
 - Python
-- CustomTkinter
-- Google Gemini API
-- SpeechRecognition
-- PyAudio
-- pyttsx3
-- python-dotenv
+- CustomTkinter — desktop UI
+- Google Gemini API — AI responses
+- SpeechRecognition + PyAudio — voice input
+- pyttsx3 — offline text-to-speech
+- python-dotenv — environment config
 
----
+## Getting Started
 
-## Installation
-
-Clone the repository.
+**1. Clone the repo**
 
 ```bash
 git clone https://github.com/Pratistha2026/Astra-AI-Assistant.git
-```
-
-Move into the project folder.
-
-```bash
 cd Astra-AI-Assistant
 ```
 
-Install the required packages.
+**2. Install dependencies**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the project directory.
+**3. Configure your API key**
+
+Create a `.env` file in the project root:
 
 ```env
-GEMINI_API_KEY=YOUR_API_KEY
+GEMINI_API_KEY=your_api_key_here
 ```
 
-Run the application.
+**4. Run it**
 
 ```bash
 python app.py
 ```
 
----
-
 ## Project Structure
 
-```text
+```
 automation/
     app_opener.py
     search_engine.py
@@ -86,38 +74,39 @@ voice/
     listener.py
     speaker.py
 
-Storage/
+assets/
+    main window.png
+    Astra_Demo.mp4
 
 app.py
 requirements.txt
-README.md
 ```
-
----
 
 ## Example Commands
 
-- Open YouTube
-- Open Google
-- Search Python tutorials
-- What time is it?
-- Explain machine learning
-- Stop
-- Exit
-
----
+```
+Open YouTube
+Open Google
+Search Python tutorials
+What time is it?
+Explain machine learning
+Stop
+Exit
+```
 
 ## Notes
 
-- A valid Google Gemini API key is required.
+- Requires a valid Gemini API key.
 - Voice input requires a working microphone.
-- Never upload your `.env` file or API key.
-- If PyAudio installation fails on Windows, install a compatible prebuilt wheel for your Python version.
+- Desktop app launching (Notepad, Calculator, etc.) is Windows-only.
+- Do not commit your `.env` file or API key.
+- If `PyAudio` fails to install on Windows, grab a prebuilt wheel matching your Python version.
 
----
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
 **Pratistha Singh**
-
-GitHub: https://github.com/Pratistha2026
+[github.com/Pratistha2026](https://github.com/Pratistha2026)
