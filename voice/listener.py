@@ -3,9 +3,10 @@ import threading
 import speech_recognition as sr
 
 recognizer = sr.Recognizer()
-recognizer.energy_threshold = 150
+recognizer.energy_threshold = 300
 recognizer.dynamic_energy_threshold = True
-recognizer.pause_threshold = 1.0
+recognizer.dynamic_energy_ratio = 1.8
+recognizer.pause_threshold = 0.8
 recognizer.non_speaking_duration = 0.5
 
 _cached_mic_index = "unset"
@@ -82,7 +83,11 @@ def test_microphone(index, duration=3):
 def _listen_once(mic_index, timeout, phrase_time_limit, result):
     try:
         with sr.Microphone(device_index=mic_index) as source:
-            recognizer.adjust_for_ambient_noise(source, duration=1.2)
+            recognizer.adjust_for_ambient_noise(source, duration=1.5)
+            # add headroom above the measured noise floor so steady
+            # background noise (fan, traffic, chatter) doesn't trip
+            # the recognizer into thinking it's speech
+            recognizer.energy_threshold = max(recognizer.energy_threshold, 300) + 50
             print("Listening...")
             audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
 

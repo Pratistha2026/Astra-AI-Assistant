@@ -5,6 +5,7 @@ Text-to-speech for Astra, using pyttsx3 (offline).
 
 import pyttsx3
 import threading
+import time
 import re
 
 _lock = threading.Lock()
@@ -28,6 +29,22 @@ def _pick_voice(engine):
                 return v.id
 
     return voices[1].id if len(voices) > 1 else voices[0].id
+
+
+def _speak_sentence(engine, sentence):
+    """Speak one sentence using a manually-driven loop instead of
+    runAndWait(), so _stop_flag can interrupt it immediately instead of
+    waiting for the whole sentence to finish."""
+    engine.say(sentence)
+    engine.startLoop(False)
+    try:
+        while engine.isBusy():
+            if _stop_flag.is_set():
+                break
+            engine.iterate()
+            time.sleep(0.03)
+    finally:
+        engine.endLoop()
 
 
 def speak(text):
@@ -61,8 +78,7 @@ def speak(text):
             print("[ASTRA SAYS]", sentence)
 
             try:
-                engine.say(sentence)
-                engine.runAndWait()
+                _speak_sentence(engine, sentence)
             except RuntimeError:
                 break
 
