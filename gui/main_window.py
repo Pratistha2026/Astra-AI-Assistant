@@ -97,6 +97,7 @@ class AstraGUI(ctk.CTk):
         self.mood = "idle"
         self.angle = 0.0
         self.stop_requested = False
+        self.voice_stop_event = threading.Event()  # lets Stop cancel an active listen()
         self.is_fullscreen = True
         self._hearts = []
 
@@ -523,6 +524,7 @@ class AstraGUI(ctk.CTk):
 
     def stop_everything(self):
         self.stop_requested = True
+        self.voice_stop_event.set()
         stop_speaking()
         self.set_state("idle")
 
@@ -546,15 +548,21 @@ class AstraGUI(ctk.CTk):
             self.process_command(cmd)
 
     def start_voice(self):
+        self.stop_requested = False
+        self.voice_stop_event = threading.Event()
         self.set_state("listening")
-        threading.Thread(target=self.voice_thread, daemon=True).start()
+        threading.Thread(target=self.voice_thread, args=(self.voice_stop_event,), daemon=True).start()
 
-    def voice_thread(self):
+    def voice_thread(self, stop_event):
         try:
-            cmd = listen()
+            cmd = listen(stop_event=stop_event)
         except Exception as e:
             print("Voice error:", e)
             cmd = None
+
+        if stop_event.is_set():
+            self.set_state("idle")
+            return
 
         self.set_state("idle")
         self.ui(lambda: self.process_command(cmd if cmd else ""))
