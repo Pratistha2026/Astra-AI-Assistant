@@ -1,25 +1,50 @@
 import os
-from dotenv import load_dotenv
+import json
+from pathlib import Path
 import google.generativeai as genai
 
-# Load API key from .env file
-load_dotenv()
-api_key = os.getenv("GEMINI_API_KEY")
+CONFIG_DIR = Path(os.getenv("APPDATA", Path.home())) / "Astra"
+CONFIG_FILE = CONFIG_DIR / "config.json"
 
-if not api_key:
-    print("Warning: GEMINI_API_KEY not found in .env file. AI features will not work.")
-else:
+api_key = None
+model = None
+
+
+def load_saved_key():
+    if CONFIG_FILE.exists():
+        try:
+            data = json.loads(CONFIG_FILE.read_text())
+            key = data.get("GEMINI_API_KEY", "").strip()
+            return key if key else None
+        except Exception:
+            return None
+    return None
+
+
+def set_api_key(key):
+    global api_key, model
+    key = key.strip()
+    if not key:
+        return False
+
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    CONFIG_FILE.write_text(json.dumps({"GEMINI_API_KEY": key}))
+
+    api_key = key
     genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    return True
 
-model = genai.GenerativeModel("gemini-2.5-flash")
+
+def has_api_key():
+    return api_key is not None
 
 
-# =====================================================================
-# 🧠 EDIT ME: This is Astra's "personality + teaching style" instruction.
-# It runs before every question, so Astra always explains things simply.
-# Feel free to rewrite this in your own words - it directly changes how
-# Astra talks to you.
-# =====================================================================
+_saved = load_saved_key()
+if _saved:
+    set_api_key(_saved)
+
+
 SYSTEM_STYLE = """
 You are Astra, a warm and friendly AI assistant. Answer the user's question
 so that a curious 12-year-old could understand it. Follow these rules:
@@ -40,11 +65,7 @@ so that a curious 12-year-old could understand it. Follow these rules:
 
 
 def ask_ai(question):
-    """
-    Sends a question to Gemini AI and returns (answer_text, page_url_or_None).
-    Handles errors safely so Astra never crashes because of a bad API call.
-    """
-    if not api_key:
+    if not has_api_key():
         return "Sorry, my AI brain isn't set up yet. Please add your API key.", None
 
     try:
@@ -61,12 +82,6 @@ def ask_ai(question):
 
 
 def _extract_page_link(raw_text):
-    """
-    Looks for a trailing line like:
-        PAGE: Machine learning
-    Removes it from the spoken/displayed answer and turns it into a
-    Wikipedia search URL the GUI can show as a clickable "Learn more" link.
-    """
     lines = raw_text.splitlines()
     page_url = None
     cleaned_lines = []
@@ -78,7 +93,7 @@ def _extract_page_link(raw_text):
             if topic:
                 query = topic.replace(" ", "_")
                 page_url = f"https://en.wikipedia.org/wiki/{query}"
-            continue  # don't include this line in the spoken answer
+            continue
         cleaned_lines.append(line)
 
     answer = "\n".join(cleaned_lines).strip()
