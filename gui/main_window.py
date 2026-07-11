@@ -13,7 +13,6 @@ from automation.app_opener import open_app
 from automation.web_opener import open_website
 from automation.search_engine import google_search
 from brain.ai_brain import ask_ai
-from brain import ai_brain
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
@@ -109,8 +108,6 @@ class AstraGUI(ctk.CTk):
         self.grid_columnconfigure(0, weight=0)  # sidebar - fixed width
         self.grid_columnconfigure(1, weight=1)  # main content - stretches
 
-        self.ensure_api_key()
-
         self.build_sidebar()
         self.build_main_area()
 
@@ -123,64 +120,6 @@ class AstraGUI(ctk.CTk):
 
         self.after(50, lambda: self.set_fullscreen(True))
         self.after(800, self.greet_user)
-
-    # =====================================================================
-    # First-launch API key setup
-    # =====================================================================
-    def ensure_api_key(self):
-        if ai_brain.has_api_key():
-            return
-
-        win = ctk.CTkToplevel(self)
-        win.title("Set up Astra")
-        win.geometry("440x320")
-        win.configure(fg_color=self.BG)
-        win.resizable(False, False)
-        win.grab_set()
-        win.attributes("-topmost", True)
-
-        ctk.CTkLabel(win, text="🌸 Welcome to Astra!", text_color=self.ACCENT,
-                     font=(self.FONT_FAMILY, 20, "bold")).pack(pady=(24, 6))
-
-        ctk.CTkLabel(
-            win,
-            text="To power my AI brain, I need a free Gemini API key.\n"
-                 "Get one at aistudio.google.com/app/apikey",
-            text_color=self.TEXT, font=self.FONT_SMALL, justify="center"
-        ).pack(pady=(0, 4))
-
-        ctk.CTkButton(
-            win, text="Open Google AI Studio", corner_radius=14, height=34,
-            font=self.FONT_SMALL, fg_color=self.PANEL_BG, text_color=self.TEXT,
-            hover_color=self.ACCENT_SOFT, border_width=1, border_color=self.ACCENT_SOFT,
-            command=lambda: webbrowser.open("https://aistudio.google.com/app/apikey")
-        ).pack(pady=(6, 16))
-
-        key_entry = ctk.CTkEntry(
-            win, placeholder_text="Paste your Gemini API key here",
-            width=340, height=42, corner_radius=16, font=self.FONT_CHAT,
-            fg_color=self.PANEL_BG, border_color=self.ACCENT_SOFT, text_color=self.TEXT
-        )
-        key_entry.pack(pady=(0, 8))
-
-        error_label = ctk.CTkLabel(win, text="", text_color="#D9354F", font=self.FONT_SMALL)
-        error_label.pack()
-
-        def save_key():
-            key = key_entry.get().strip()
-            if not key:
-                error_label.configure(text="Please paste a valid key.")
-                return
-            ai_brain.set_api_key(key)
-            win.destroy()
-
-        ctk.CTkButton(
-            win, text="Save & Start", corner_radius=16, height=42,
-            font=self.FONT_BUTTON, fg_color=self.ACCENT, hover_color=self.ACCENT_DARK,
-            command=save_key
-        ).pack(pady=(10, 20))
-
-        win.wait_window()
 
     # =====================================================================
     # Fullscreen handling

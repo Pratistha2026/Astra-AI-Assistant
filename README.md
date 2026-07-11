@@ -40,15 +40,29 @@ https://github.com/Pratistha2026/Astra-AI-Assistant/blob/main/assets/Astra_Demo.
 
 ## Tech Stack
 
-| Technology        | Purpose                         |
-| ----------------- | ------------------------------- |
-| Python            | Core application                |
-| CustomTkinter     | Desktop user interface          |
-| Google Gemini API | AI responses                    |
-| SpeechRecognition | Voice recognition               |
-| PyAudio           | Microphone input                |
-| pyttsx3           | Offline text-to-speech          |
-| python-dotenv     | Environment variable management |
+| Technology         | Purpose                          |
+| ------------------ | --------------------------------- |
+| Python              | Core application                 |
+| CustomTkinter        | Desktop user interface           |
+| Google Gemini API    | AI responses (via backend)       |
+| SpeechRecognition   | Voice recognition                |
+| PyAudio             | Microphone input                 |
+| pyttsx3             | Offline text-to-speech           |
+| requests            | Talking to the Astra backend     |
+| Flask (backend only) | Hosts the AI endpoint remotely   |
+
+---
+
+## How AI Responses Work
+
+Astra doesn't call Google Gemini directly from the desktop app. Instead, it
+sends each question to a small hosted backend
+(see [`astra-backend/`](astra-backend)), which holds the Gemini API key
+securely and returns the answer. This means:
+
+* You can download and run Astra with **no API key setup of your own**.
+* No `.env` file or API key prompt is needed on first launch.
+* The backend applies a light rate limit per user to keep things fair.
 
 ---
 
@@ -57,7 +71,7 @@ https://github.com/Pratistha2026/Astra-AI-Assistant/blob/main/assets/Astra_Demo.
 * Python 3.10 or newer
 * Windows 10/11
 * Working microphone (for voice commands)
-* Internet connection (for Gemini responses)
+* Internet connection (for AI responses)
 
 ---
 
@@ -77,19 +91,14 @@ cd Astra-AI-Assistant
 pip install -r requirements.txt
 ```
 
-### 3. Configure your Gemini API key
-
-Create a `.env` file in the project root.
-
-```env
-GEMINI_API_KEY=your_api_key_here
-```
-
-### 4. Run the application
+### 3. Run the application
 
 ```bash
 python app.py
 ```
+
+That's it — no API key setup needed. Astra talks to a hosted backend that
+handles the AI responses for you.
 
 ---
 
@@ -148,11 +157,10 @@ Exit
 
 ## Notes
 
-* A valid Google Gemini API key is required.
 * Voice commands require a working microphone.
 * Desktop application launching currently supports Windows.
-* Never commit your `.env` file or API key.
-* If `PyAudio` installation fails on Windows, install the appropriate prebuilt wheel for your Python version.
+* AI responses depend on the Astra backend being online; if it's
+  unreachable, Astra will let you know instead of crashing.
 
 ---
 
