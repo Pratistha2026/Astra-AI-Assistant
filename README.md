@@ -49,7 +49,6 @@ https://github.com/Pratistha2026/Astra-AI-Assistant/blob/main/assets/Astra_Demo.
 | PyAudio             | Microphone input                 |
 | pyttsx3             | Offline text-to-speech           |
 | requests            | Talking to the Astra backend     |
-| Flask (backend only) | Hosts the AI endpoint remotely   |
 
 ---
 
@@ -57,12 +56,16 @@ https://github.com/Pratistha2026/Astra-AI-Assistant/blob/main/assets/Astra_Demo.
 
 Astra doesn't call Google Gemini directly from the desktop app. Instead, it
 sends each question to a small hosted backend
-(see [`astra-backend/`](astra-backend)), which holds the Gemini API key
-securely and returns the answer. This means:
+([astra-backend](https://github.com/Pratistha2026/astra-backend), a separate
+repo built with Flask), which holds the Gemini API key securely and returns
+the answer. This means:
 
 * You can download and run Astra with **no API key setup of your own**.
 * No `.env` file or API key prompt is needed on first launch.
 * The backend applies a light rate limit per user to keep things fair.
+* Want to run your own backend instead of the default one? See the
+  `astra-backend` repo's README for deployment steps, then update
+  `BACKEND_URL` in `brain/ai_brain.py` to point to your own server.
 
 ---
 
@@ -107,26 +110,37 @@ handles the AI responses for you.
 ```text
 Astra-AI-Assistant/
 
-├── automation/
-│   ├── app_opener.py
-│   ├── search_engine.py
-│   └── web_opener.py
-│
 ├── assets/
 │   ├── main window.png
 │   └── Astra_Demo.mp4
 │
+├── automation/
+│   ├── __init__.py
+│   ├── app_opener.py
+│   ├── search_engine.py
+│   └── web_opener.py
+│
 ├── brain/
+│   ├── __init__.py
 │   ├── ai_brain.py
 │   └── command.py
 │
 ├── gui/
+│   ├── __init__.py
 │   └── main_window.py
 │
 ├── voice/
+│   ├── __init__.py
 │   ├── listener.py
-│   └── speaker.py
+│   ├── speaker.py
+│   ├── mic_test.py
+│   ├── scan_mics.py
+│   └── test_speak.py
 │
+├── .env.example
+├── .gitignore
+├── Astra.spec
+├── Astra_Debug.spec
 ├── app.py
 ├── requirements.txt
 ├── LICENSE
@@ -161,6 +175,10 @@ Exit
 * Desktop application launching currently supports Windows.
 * AI responses depend on the Astra backend being online; if it's
   unreachable, Astra will let you know instead of crashing.
+* If the backend is asleep (free Render tier), the first AI response may
+  take a little longer to arrive.
+* `.env.example` in this repo is only relevant if you're deploying your
+  own copy of the backend — the desktop app itself never reads a `.env` file.
 
 ---
 
